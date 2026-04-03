@@ -1,7 +1,7 @@
 name: FalixNodes AFK-Killer
 on:
   schedule:
-    - cron: '*/20 * * * *' # Запуск каждые 20 минут
+    - cron: '*/20 * * * *' # Запуск каждые 20 минут автоматически
   workflow_dispatch: # Позволяет запустить вручную кнопкой
 
 jobs:
@@ -16,13 +16,22 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Chrome and dependencies
+      - name: Install dependencies
         run: |
           pip install undetected-chromedriver selenium requests
 
       - name: Run AFK Killer
         env:
-          EMAIL: ${{ secrets.FALIX_EMAIL }}
-          PASSWORD: ${{ secrets.FALIX_PASSWORD }}
+          EMAIL: ${{ secrets.EMAIL }}
+          PASSWORD: ${{ secrets.PASSWORD }}
           SERVER_ID: ${{ secrets.SERVER_ID }}
         run: python bot.py
+
+      # ЭТОТ БЛОК СОХРАНИТ СКРИНШОТ ПРИ ОШИБКЕ
+      - name: Upload Debug Screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-screenshots
+          path: "*.png"
+          retention-days: 1
