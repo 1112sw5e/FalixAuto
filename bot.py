@@ -14,24 +14,24 @@ SERVER_ID = os.getenv("SERVER_ID")
 PANEL_URL = "https://client.falixnodes.net"
 
 def run_bypass():
-    print("[*] ИНИЦИАЛИЗАЦИЯ FEERHUS ENGINE (FIXED VERSION)...")
+    print("[*] ИНИЦИАЛИЗАЦИЯ FEERHUS ENGINE (FORCE FIX v146)...")
     
     options = uc.ChromeOptions()
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
+    # Отключаем проверку обновлений, чтобы он не лез за 147-й версией
+    options.add_argument('--disable-browser-side-navigation')
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36")
 
     try:
-        # ЖЕСТКИЙ ФИКС ВЕРСИИ ПОД GITHUB (146)
-        print("[*] ПОПЫТКА ЗАПУСКА ПОД CHROME 146...")
+        # ПРИНУДИТЕЛЬНО 146
         driver = uc.Chrome(options=options, version_main=146)
         wait = WebDriverWait(driver, 30)
 
-        # 1. АВТОРИЗАЦИЯ
         print(f"[*] ЗАХОД НА ПАНЕЛЬ...")
         driver.get(f"{PANEL_URL}/auth/login")
-        time.sleep(12) 
+        time.sleep(15) 
 
         print("[*] ВВОД ДАННЫХ...")
         email_field = wait.until(EC.presence_of_element_located((By.NAME, "user_detail")))
@@ -43,13 +43,11 @@ def run_bypass():
         time.sleep(15)
         print("[+] АВТОРИЗАЦИЯ ПРОЙДЕНА.")
 
-        # 2. ПЕРЕХОД В КОНСОЛЬ
         server_url = f"{PANEL_URL}/server/{SERVER_ID}"
         print(f"[*] ПРОВЕРКА КОНСОЛИ: {server_url}")
         driver.get(server_url)
         time.sleep(20) 
 
-        # 3. ПАРСИНГ
         page_content = driver.page_source
         links = re.findall(r'https://client\.falixnodes\.net/verify\?t=[\w\d]+', page_content)
 
